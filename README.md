@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  Mirror public X posts to WhatsApp via WAHA and Telegram via Bot API, with PostgreSQL state, Redis queues, retries, and an admin dashboard.
+  Mirror public X posts to WhatsApp via WAHA and Telegram via Bot API, with PostgreSQL state, Redis queues, retries, a dark CLI, and an admin dashboard.
 </p>
 
 ## Apa Ini?
@@ -65,7 +65,46 @@ flowchart LR
 - Delivery idempotency agar target yang sudah sukses tidak dikirim ulang.
 - Scheduler lock berbasis Redis agar polling tidak overlap.
 - Admin dashboard untuk source, runtime, delivery, retry, dan manual sync.
+- Dark CLI untuk cek status, doctor, template env, dan checklist deploy.
 - Siap deploy di Railway dengan role `api`, `scheduler`, dan `worker`.
+
+## Platform Support
+
+Project ini bisa dipakai di desktop dan Android Termux, dengan catatan dependency production tetap butuh PostgreSQL dan Redis.
+
+| Platform | Status | Mode yang disarankan |
+| --- | --- | --- |
+| Windows | Supported | Docker Compose atau Node.js + external DB/Redis |
+| macOS | Supported | Docker Compose atau Node.js + external DB/Redis |
+| Linux | Supported | Docker Compose atau Node.js + external DB/Redis |
+| Android Termux | Supported | Node.js + external PostgreSQL/Redis |
+
+Termux biasanya tidak cocok untuk Docker Compose biasa. Kalau menjalankan dari Android, pakai PostgreSQL dan Redis external, misalnya Railway, Neon/Supabase untuk Postgres, dan Upstash/Redis Cloud untuk Redis.
+
+## CLI Control Panel
+
+CLI memakai tema terminal dominan hitam, biru, dan merah dengan logo X. CLI ini berguna untuk setup cepat, cek environment, dan melihat status service lokal.
+Banner CLI otomatis memakai mode compact di terminal sempit seperti Termux, jadi tidak mudah pecah di layar HP.
+
+```bash
+npm run cli
+```
+
+Perintah yang tersedia:
+
+| Command | Fungsi |
+| --- | --- |
+| `npm run cli` | Tampilkan panel bantuan CLI |
+| `npm run doctor` | Cek OS, Node, Git, Docker, dan env penting |
+| `npm run status` | Cek `/healthz` dan `/runtime` lokal |
+| `npm run cli -- env` | Cetak template `.env` minimal |
+| `npm run cli -- railway` | Tampilkan checklist deploy Railway |
+
+Kalau package sudah di-build dan dipasang sebagai binary, CLI juga tersedia sebagai:
+
+```bash
+x-waha-bridge doctor
+```
 
 ## Quick Start Lokal
 
@@ -77,6 +116,12 @@ Gunakan langkah ini untuk menjalankan semua service lokal dengan Docker Compose.
 git clone https://github.com/mocasus/x-waha-bridge.git
 cd x-waha-bridge
 npm install
+```
+
+Cek kesiapan mesin:
+
+```bash
+npm run doctor
 ```
 
 ### 2. Buat file `.env`
@@ -152,6 +197,68 @@ http://localhost:8080
 ```
 
 Login memakai `APP_ADMIN_USERNAME` dan `APP_ADMIN_PASSWORD`, lalu klik `Sync Now` untuk memicu polling manual.
+
+## Quick Start Termux
+
+Gunakan mode ini kalau ingin menjalankan app dari Android. Termux hanya menjalankan Node.js app; PostgreSQL, Redis, dan WAHA sebaiknya remote.
+
+### 1. Install package Termux
+
+```bash
+pkg update
+pkg install nodejs-lts git
+```
+
+### 2. Clone dan install
+
+```bash
+git clone https://github.com/mocasus/x-waha-bridge.git
+cd x-waha-bridge
+npm install
+```
+
+### 3. Buat `.env`
+
+```bash
+cp .env.example .env
+```
+
+Isi `.env` dengan remote database:
+
+```env
+DATABASE_URL=postgres://user:password@host:5432/database
+REDIS_URL=redis://default:password@host:6379
+
+APP_ROLE=all
+APP_PORT=8080
+APP_LOGIN_ENABLED=true
+APP_ADMIN_USERNAME=admin
+APP_ADMIN_PASSWORD=change_this_password
+APP_ADMIN_TOKEN=change_this_long_random_token
+
+X_PROVIDER=nitter
+X_SOURCE_USERNAMES=xdevelopers
+X_BOOTSTRAP_MODE=latest
+
+WAHA_BASE_URL=https://your-waha-host.example.com
+WAHA_API_KEY=your_waha_api_key
+WAHA_SESSION_NAME=default
+WAHA_TARGETS=120363xxxxxxxxxx@g.us
+```
+
+### 4. Cek dan jalankan
+
+```bash
+npm run doctor
+npm run build
+npm start
+```
+
+Dashboard akan tersedia di:
+
+```text
+http://127.0.0.1:8080
+```
 
 ## Deploy Ke Railway
 
