@@ -81,24 +81,104 @@ Project ini bisa dipakai di desktop dan Android Termux, dengan catatan dependenc
 
 Termux biasanya tidak cocok untuk Docker Compose biasa. Kalau menjalankan dari Android, pakai PostgreSQL dan Redis external, misalnya Railway, Neon/Supabase untuk Postgres, dan Upstash/Redis Cloud untuk Redis.
 
-## CLI Control Panel
+## Quick Start CLI
 
-CLI memakai tema terminal dominan hitam, biru, dan merah dengan logo X. CLI ini berguna untuk setup cepat, cek environment, dan melihat status service lokal.
-Banner CLI otomatis memakai mode compact di terminal sempit seperti Termux, jadi tidak mudah pecah di layar HP.
+CLI adalah control panel terminal untuk project ini. Jalankan semua command dari folder repo `x-waha-bridge`.
+
+Ada dua jenis command:
+
+- Setup command: bisa dijalankan sebelum server hidup, misalnya `doctor`, `env`, dan `railway`.
+- Dashboard command: butuh `bridge-api` sudah hidup, karena menu ini membaca dan mengubah data lewat API lokal.
+
+CLI memakai tema terminal dominan hitam, biru, dan merah dengan logo X. Banner otomatis memakai mode compact di terminal sempit seperti Termux, jadi tidak mudah pecah di layar HP.
+
+### 1. Siapkan repo dan dependency
+
+Kalau baru pertama kali:
+
+```bash
+git clone https://github.com/mocasus/x-waha-bridge.git
+cd x-waha-bridge
+npm install
+```
+
+Buat file `.env` dari contoh:
+
+```bash
+cp .env.example .env
+```
+
+Di Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Isi minimal `DATABASE_URL`, `REDIS_URL`, `WAHA_BASE_URL`, `WAHA_SESSION_NAME`, `WAHA_TARGETS`, dan `APP_ADMIN_TOKEN`.
+
+### 2. Cek kesiapan mesin
+
+```bash
+npm run doctor
+```
+
+Command ini mengecek OS, Node.js, npm, Git, Docker, dan env penting seperti `DATABASE_URL`, `REDIS_URL`, `WAHA_BASE_URL`, dan `APP_ADMIN_TOKEN`.
+
+### 3. Lihat template env minimal kalau masih bingung
+
+```bash
+npm run cli -- env
+```
+
+Gunakan output ini sebagai referensi saat mengisi `.env`.
+
+### 4. Jalankan service
+
+Desktop dengan Docker:
+
+```bash
+docker compose up -d --build
+```
+
+Termux atau server tanpa Docker:
+
+```bash
+npm run build
+npm start
+```
+
+Untuk Termux, gunakan PostgreSQL dan Redis remote.
+
+### 5. Buka dashboard CLI interaktif
 
 ```bash
 npm run cli
 ```
 
-Perintah yang tersedia:
+Dashboard CLI memiliki menu:
+
+- Overview and health.
+- X accounts / sources.
+- Deliveries and retries.
+- Runtime targets.
+- Doctor.
+- Railway guide.
+- Env template.
+
+Menu `X accounts / sources` bisa dipakai untuk list akun, tambah akun, bulk add, toggle active/paused, update repost/quote/reply, dan trigger `Sync Now`.
+
+Menu `Deliveries and retries` bisa melihat delivery terakhir dan retry delivery `failed` atau `pending + failed`.
+
+### Command reference
 
 | Command | Fungsi |
 | --- | --- |
-| `npm run cli` | Tampilkan panel bantuan CLI |
+| `npm run cli` | Buka dashboard CLI interaktif |
 | `npm run doctor` | Cek OS, Node, Git, Docker, dan env penting |
 | `npm run status` | Cek `/healthz` dan `/runtime` lokal |
 | `npm run cli -- env` | Cetak template `.env` minimal |
 | `npm run cli -- railway` | Tampilkan checklist deploy Railway |
+| `npm run cli -- help` | Tampilkan ringkasan quick start CLI |
 
 Kalau package sudah di-build dan dipasang sebagai binary, CLI juga tersedia sebagai:
 
@@ -116,12 +196,6 @@ Gunakan langkah ini untuk menjalankan semua service lokal dengan Docker Compose.
 git clone https://github.com/mocasus/x-waha-bridge.git
 cd x-waha-bridge
 npm install
-```
-
-Cek kesiapan mesin:
-
-```bash
-npm run doctor
 ```
 
 ### 2. Buat file `.env`

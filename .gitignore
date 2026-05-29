@@ -11,4 +11,4 @@ deliveries.json
 nitter_feed.xml
 remote-waha-qr.png
 query
-{console.error(e)
+[{]console.error(e)
