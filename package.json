@@ -1,7 +1,7 @@
 {
   "name": "x-waha-bridge",
   "version": "1.0.0",
-  "description": "Production-ready X to WhatsApp Channel bridge via WAHA",
+  "description": "Mirror public X posts to WhatsApp via WAHA and Telegram via Bot API.",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -15,7 +15,17 @@
     "test": "vitest run",
     "test:watch": "vitest"
   },
-  "keywords": [],
+  "keywords": [
+    "x",
+    "twitter",
+    "waha",
+    "whatsapp",
+    "telegram",
+    "railway",
+    "bullmq",
+    "postgresql",
+    "redis"
+  ],
   "author": "",
   "license": "MIT",
   "type": "commonjs",

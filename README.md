@@ -1,75 +1,99 @@
 <p align="center">
-  <img src="assets/logo.svg" alt="X WAHA Bridge logo" width="760">
+  <img src="assets/logo.svg" alt="X WAHA Bridge" width="860">
 </p>
 
 <p align="center">
-  <a href="https://nodejs.org"><img alt="Node.js" src="https://img.shields.io/badge/Node.js-22-2f7d32?style=flat-square"></a>
-  <a href="https://www.typescriptlang.org"><img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.x-3178c6?style=flat-square"></a>
-  <a href="https://railway.com"><img alt="Railway ready" src="https://img.shields.io/badge/Railway-ready-0b0d0e?style=flat-square"></a>
-  <a href="https://docs.docker.com/compose/"><img alt="Docker Compose" src="https://img.shields.io/badge/Docker-Compose-2496ed?style=flat-square"></a>
-  <img alt="License" src="https://img.shields.io/badge/license-MIT-111827?style=flat-square">
+  <a href="https://nodejs.org"><img alt="Node.js 22" src="https://img.shields.io/badge/Node.js-22-101820?style=for-the-badge&logo=node.js&logoColor=white"></a>
+  <a href="https://www.typescriptlang.org"><img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white"></a>
+  <a href="https://railway.com"><img alt="Railway ready" src="https://img.shields.io/badge/Railway-ready-0B0D0E?style=for-the-badge&logo=railway&logoColor=white"></a>
+  <a href="https://docs.docker.com/compose/"><img alt="Docker Compose" src="https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white"></a>
 </p>
 
 <p align="center">
-  A production-minded bridge for mirroring public X posts into WhatsApp targets via WAHA and optional Telegram channels via Telegram Bot API.
+  Mirror public X posts to WhatsApp via WAHA and Telegram via Bot API, with PostgreSQL state, Redis queues, retries, and an admin dashboard.
 </p>
 
-## Overview
+## Apa Ini?
 
-X WAHA Bridge watches one or more public X accounts, stores new posts in PostgreSQL, deduplicates them, then publishes each post through a Redis-backed worker. It is built for long-running deployment on Railway, Docker, or any Node.js host with PostgreSQL and Redis.
+X WAHA Bridge adalah service automation untuk memantau akun X publik, menyimpan post baru, lalu mengirimkannya ke target WhatsApp dan Telegram. Project ini cocok untuk membuat bot mirror, news relay, komunitas update channel, atau pipeline publikasi otomatis dari beberapa akun X ke channel yang kamu kelola.
+
+Project ini tidak hanya mengambil post lalu langsung mengirim pesan. Ia menyimpan state di database, membuat delivery record, menahan duplikasi, memakai queue untuk publish, dan menyediakan dashboard admin untuk melihat source, post, delivery, retry, serta status WAHA.
+
+## Kenapa Dibuat Begini?
+
+Automation X ke WhatsApp/Telegram mudah terlihat sederhana, tapi biasanya rusak di bagian operasional:
+
+- Post yang sama bisa terkirim dua kali.
+- Scheduler bisa overlap saat polling lambat.
+- WAHA atau Telegram bisa gagal sementara.
+- Target WhatsApp channel/group butuh format ID berbeda.
+- Scraping X lewat Nitter bisa timeout.
+- Admin endpoint berbahaya jika terbuka tanpa auth.
+
+Repo ini dibuat dengan asumsi masalah-masalah itu akan muncul di production, jadi sejak awal ada database state, queue, lock scheduler, retry, dan dashboard.
+
+## Arsitektur
 
 ```mermaid
 flowchart LR
-  X["Public X accounts"] --> Scheduler["bridge-scheduler"]
-  Scheduler --> DB[("PostgreSQL")]
-  Scheduler --> Queue[("Redis / BullMQ")]
-  Queue --> Worker["bridge-worker"]
+  X["Public X Accounts"] --> Scheduler["bridge-scheduler"]
+  Scheduler --> Postgres[("PostgreSQL")]
+  Scheduler --> Redis[("Redis / BullMQ")]
+  Redis --> Worker["bridge-worker"]
   Worker --> WAHA["WAHA / WhatsApp"]
   Worker --> Telegram["Telegram Bot API"]
-  API["bridge-api dashboard"] --> DB
-  API --> Queue
+  API["bridge-api dashboard"] --> Postgres
+  API --> Redis
 ```
 
-## Features
-
-- Poll one or many public X accounts.
-- Publish to WhatsApp groups, channels, or direct chats through WAHA.
-- Publish to Telegram chats or channels through a Telegram bot.
-- Store source, post, delivery, retry, and failure state in PostgreSQL.
-- Use Redis + BullMQ for reliable publish jobs.
-- Avoid duplicate sends with delivery-level idempotency.
-- Manage sources and retries from a simple admin dashboard.
-- Deploy as separate API, scheduler, and worker services on Railway.
-
-## Services
-
-| Service | Role | Public domain |
+| Service | Tugas | Perlu public domain? |
 | --- | --- | --- |
-| `bridge-api` | Dashboard, admin API, healthcheck | Yes |
-| `bridge-scheduler` | Polls X and enqueues new posts | No |
-| `bridge-worker` | Sends queued posts to WAHA and Telegram | No |
-| `postgres` | Persistent state | No |
-| `redis` | Queue and scheduler lock | No |
+| `bridge-api` | Dashboard, admin API, healthcheck | Ya |
+| `bridge-scheduler` | Polling X dan enqueue post baru | Tidak |
+| `bridge-worker` | Publish job ke WAHA dan Telegram | Tidak |
+| `postgres` | Source, post, delivery, retry state | Tidak |
+| `redis` | BullMQ queue dan scheduler lock | Tidak |
 
-## Quick Start Local
+## Fitur Utama
 
-Use this path to test the app locally before deploying.
+- Multi-source polling dari satu atau banyak akun X publik.
+- Provider X official API atau Nitter RSS fallback.
+- PostgreSQL persistence untuk source, post, dan delivery.
+- Redis + BullMQ untuk publish queue yang tahan retry.
+- WhatsApp publish lewat WAHA ke group, channel, atau direct chat.
+- Telegram publish lewat Telegram Bot API.
+- Delivery idempotency agar target yang sudah sukses tidak dikirim ulang.
+- Scheduler lock berbasis Redis agar polling tidak overlap.
+- Admin dashboard untuk source, runtime, delivery, retry, dan manual sync.
+- Siap deploy di Railway dengan role `api`, `scheduler`, dan `worker`.
 
-### 1. Create `.env`
+## Quick Start Lokal
+
+Gunakan langkah ini untuk menjalankan semua service lokal dengan Docker Compose.
+
+### 1. Clone dan install
+
+```bash
+git clone https://github.com/mocasus/x-waha-bridge.git
+cd x-waha-bridge
+npm install
+```
+
+### 2. Buat file `.env`
+
+PowerShell:
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-On macOS/Linux:
+macOS/Linux:
 
 ```bash
 cp .env.example .env
 ```
 
-### 2. Fill the required values
-
-Open `.env` and set these values:
+### 3. Isi konfigurasi minimal
 
 ```env
 DATABASE_URL=postgres://bridge:bridge@postgres:5432/x_waha_bridge
@@ -92,7 +116,7 @@ WAHA_TARGETS=120363xxxxxxxxxx@g.us
 WAHA_FORWARD_TARGETS=
 ```
 
-Optional Telegram publishing:
+Telegram opsional:
 
 ```env
 TELEGRAM_BOT_TOKEN=123456:telegram_bot_token
@@ -100,19 +124,19 @@ TELEGRAM_CHAT_IDS=@your_channel
 TELEGRAM_SEND_MEDIA=true
 ```
 
-### 3. Start the stack
+### 4. Jalankan
 
 ```bash
 docker compose up -d --build
 ```
 
-### 4. Check health
+### 5. Cek service
 
 ```bash
 curl http://localhost:8080/healthz
 ```
 
-Expected shape:
+Response sehat kira-kira seperti ini:
 
 ```json
 {
@@ -121,40 +145,40 @@ Expected shape:
 }
 ```
 
-### 5. Open the dashboard
+### 6. Buka dashboard
 
 ```text
 http://localhost:8080
 ```
 
-Login with `APP_ADMIN_USERNAME` and `APP_ADMIN_PASSWORD`, then click `Sync Now` to trigger a manual poll.
+Login memakai `APP_ADMIN_USERNAME` dan `APP_ADMIN_PASSWORD`, lalu klik `Sync Now` untuk memicu polling manual.
 
-## Deploy To Railway
+## Deploy Ke Railway
 
-Railway should run this project as three app services from the same repository: one API, one scheduler, and one worker.
+Railway adalah target paling nyaman untuk project ini karena bisa menjalankan API, scheduler, worker, PostgreSQL, dan Redis dalam satu project.
 
-### 1. Create the Railway project
+### 1. Buat project
 
-1. Create a new Railway project.
-2. Connect this GitHub repository.
-3. Add a PostgreSQL service.
-4. Add a Redis service.
+1. Buat project baru di Railway.
+2. Connect repository GitHub ini.
+3. Tambahkan PostgreSQL.
+4. Tambahkan Redis.
 
-### 2. Create the app services
+### 2. Buat tiga app service
 
-Create these three services from the same repo:
+Buat tiga service dari repo yang sama:
 
-| Railway service | Required variable |
+| Railway service | Variable pembeda |
 | --- | --- |
 | `bridge-api` | `APP_ROLE=api` |
 | `bridge-scheduler` | `APP_ROLE=scheduler` |
 | `bridge-worker` | `APP_ROLE=worker` |
 
-Only `bridge-api` needs a public domain.
+Hanya `bridge-api` yang perlu public domain.
 
-### 3. Set variables for `bridge-api`
+### 3. Variable untuk `bridge-api`
 
-Use Railway variables, not `.env`, for production secrets.
+Masukkan variable ini di Railway service `bridge-api`:
 
 ```env
 APP_ROLE=api
@@ -185,7 +209,7 @@ PUBLISH_ATTEMPTS=3
 PUBLISH_BACKOFF_MS=5000
 ```
 
-Add Telegram only when needed:
+Tambahkan ini jika ingin publish ke Telegram:
 
 ```env
 TELEGRAM_BOT_TOKEN=123456:telegram_bot_token
@@ -193,70 +217,49 @@ TELEGRAM_CHAT_IDS=@your_channel
 TELEGRAM_SEND_MEDIA=true
 ```
 
-Railway injects `PORT` automatically. You do not need to set `APP_PORT` for `bridge-api`.
+Railway otomatis mengisi `PORT`, jadi `APP_PORT` tidak wajib di Railway.
 
-### 4. Set variables for scheduler and worker
+### 4. Variable untuk scheduler dan worker
 
-Copy the same variables to `bridge-scheduler` and `bridge-worker`, then change only `APP_ROLE`.
+Copy variable yang sama dari `bridge-api`, lalu ubah `APP_ROLE`.
+
+Untuk scheduler:
 
 ```env
 APP_ROLE=scheduler
 ```
 
+Untuk worker:
+
 ```env
 APP_ROLE=worker
 ```
 
-Do not expose public domains for these two services.
+`bridge-scheduler` dan `bridge-worker` tidak perlu public domain.
 
-### 5. Set healthcheck
+### 5. Healthcheck
 
-For `bridge-api`, set the Railway healthcheck path:
+Untuk `bridge-api`, set healthcheck path:
 
 ```text
 /healthz
 ```
 
-### 6. Deploy order
+### 6. Urutan deploy
 
-1. Deploy PostgreSQL and Redis.
+1. Deploy PostgreSQL dan Redis.
 2. Deploy `bridge-api`.
 3. Deploy `bridge-scheduler`.
 4. Deploy `bridge-worker`.
-5. Open the `bridge-api` public domain.
-6. Check `/healthz`.
-7. Login to the dashboard.
-8. Add or confirm X sources.
-9. Click `Sync Now`.
+5. Buka domain public `bridge-api`.
+6. Cek `/healthz`.
+7. Login dashboard.
+8. Tambah atau cek source X.
+9. Klik `Sync Now`.
 
-## Telegram Setup
+## Setup WAHA
 
-1. Open Telegram and chat with `@BotFather`.
-2. Run `/newbot`.
-3. Put the generated token in `TELEGRAM_BOT_TOKEN`.
-4. Add the bot to your group or channel.
-5. If publishing to a channel, make the bot an admin.
-6. Put the target in `TELEGRAM_CHAT_IDS`.
-
-Examples:
-
-```env
-TELEGRAM_CHAT_IDS=@public_channel
-```
-
-```env
-TELEGRAM_CHAT_IDS=-1001234567890
-```
-
-Multiple targets:
-
-```env
-TELEGRAM_CHAT_IDS=@public_channel,-1001234567890
-```
-
-## WAHA Setup
-
-Use a remote WAHA instance for production.
+WAHA adalah service yang menghubungkan aplikasi ini ke WhatsApp. Untuk production, lebih aman memakai WAHA remote yang sudah stabil.
 
 ```env
 WAHA_BASE_URL=https://your-waha-host.example.com
@@ -266,27 +269,55 @@ WAHA_TARGETS=120363xxxxxxxxxx@g.us
 WAHA_FORWARD_TARGETS=120363xxxxxxxxxx@newsletter
 ```
 
-Supported target formats:
+Target yang didukung:
 
-| Target type | Example |
+| Target | Contoh |
 | --- | --- |
 | WhatsApp group | `120363xxxxxxxxxx@g.us` |
-| WhatsApp channel | `120363xxxxxxxxxx@newsletter` |
+| WhatsApp channel/newsletter | `120363xxxxxxxxxx@newsletter` |
 | Direct chat | `628xxxxxxxxxx@c.us` |
-| Plain phone number | `628xxxxxxxxxx` |
+| Nomor polos | `628xxxxxxxxxx` |
 
-For WhatsApp Channels, the connected WhatsApp account must be an admin or owner of the channel.
+Catatan untuk WhatsApp Channel: akun WhatsApp yang login di WAHA harus menjadi admin atau owner channel.
 
-## Managing X Sources
+## Setup Telegram
 
-From the dashboard:
+1. Buka Telegram.
+2. Chat `@BotFather`.
+3. Jalankan `/newbot`.
+4. Copy token ke `TELEGRAM_BOT_TOKEN`.
+5. Tambahkan bot ke group atau channel.
+6. Jika targetnya channel, jadikan bot sebagai admin.
+7. Isi `TELEGRAM_CHAT_IDS`.
 
-1. Open `/`.
-2. Add username without `@`.
-3. Choose whether reposts, quotes, or replies should be included.
-4. Click `Sync Now`.
+Contoh:
 
-From the API:
+```env
+TELEGRAM_CHAT_IDS=@public_channel
+```
+
+Private group atau channel biasanya memakai ID numeric:
+
+```env
+TELEGRAM_CHAT_IDS=-1001234567890
+```
+
+Banyak target:
+
+```env
+TELEGRAM_CHAT_IDS=@public_channel,-1001234567890
+```
+
+## Mengelola Source X
+
+Lewat dashboard:
+
+1. Buka `/`.
+2. Tambahkan username tanpa `@`.
+3. Pilih apakah repost, quote, atau reply ikut dipublish.
+4. Klik `Sync Now`.
+
+Lewat API:
 
 ```bash
 curl -X POST https://your-railway-domain.up.railway.app/sources \
@@ -295,7 +326,7 @@ curl -X POST https://your-railway-domain.up.railway.app/sources \
   -d '{"username":"xdevelopers","includeReposts":false,"includeQuotes":true}'
 ```
 
-Bulk add:
+Tambah banyak source:
 
 ```bash
 curl -X POST https://your-railway-domain.up.railway.app/sources/bulk \
@@ -304,25 +335,25 @@ curl -X POST https://your-railway-domain.up.railway.app/sources/bulk \
   -d '{"usernames":["xdevelopers","vercel","github"]}'
 ```
 
-## API Reference
+## Endpoint Penting
 
-| Method | Path | Purpose |
+| Method | Path | Keterangan |
 | --- | --- | --- |
-| `GET` | `/` | Admin dashboard |
-| `GET` | `/healthz` | Public healthcheck |
-| `GET` | `/runtime` | Runtime config summary |
-| `GET` | `/sources` | List sources |
-| `POST` | `/sources` | Add one source |
-| `POST` | `/sources/bulk` | Add multiple sources |
-| `PATCH` | `/sources/:id` | Update source flags |
-| `DELETE` | `/sources/:id` | Disable source |
-| `GET` | `/posts?limit=20&page=1` | List stored posts |
-| `GET` | `/deliveries?limit=50&page=1` | List deliveries |
-| `POST` | `/sync-now` | Trigger poll now |
-| `POST` | `/deliveries/retry` | Retry pending or failed deliveries |
-| `GET` | `/waha/status` | Check WAHA session |
+| `GET` | `/` | Dashboard admin |
+| `GET` | `/healthz` | Healthcheck publik |
+| `GET` | `/runtime` | Ringkasan konfigurasi runtime |
+| `GET` | `/sources` | Daftar source X |
+| `POST` | `/sources` | Tambah satu source |
+| `POST` | `/sources/bulk` | Tambah banyak source |
+| `PATCH` | `/sources/:id` | Update source |
+| `DELETE` | `/sources/:id` | Nonaktifkan source |
+| `GET` | `/posts?limit=20&page=1` | Daftar post tersimpan |
+| `GET` | `/deliveries?limit=50&page=1` | Daftar delivery |
+| `POST` | `/sync-now` | Trigger polling manual |
+| `POST` | `/deliveries/retry` | Retry delivery pending atau failed |
+| `GET` | `/waha/status` | Cek status session WAHA |
 
-Admin endpoints require either browser login or:
+Endpoint admin bisa diakses lewat login browser atau header:
 
 ```http
 Authorization: Bearer <APP_ADMIN_TOKEN>
@@ -330,35 +361,35 @@ Authorization: Bearer <APP_ADMIN_TOKEN>
 
 ## Development
 
-Run only database services in Docker, then run the app on your host:
+Jalankan hanya PostgreSQL dan Redis di Docker, lalu app di host:
 
 ```bash
 npm run dev:infra
 npm run dev
 ```
 
-For this mode, use local database URLs:
+Untuk mode ini, pakai URL lokal:
 
 ```env
 DATABASE_URL=postgres://bridge:bridge@localhost:5432/x_waha_bridge
 REDIS_URL=redis://localhost:6379
 ```
 
-Stop local infra:
+Stop infra:
 
 ```bash
 npm run dev:infra:stop
 ```
 
-## Optional Local WAHA
+## WAHA Lokal Opsional
 
-WAHA does not start by default. Start it only when you want a local WAHA session:
+WAHA lokal tidak start secara default. Kalau ingin menjalankan WAHA lokal:
 
 ```bash
 docker compose --profile local-waha up -d --build
 ```
 
-Then set:
+Lalu set:
 
 ```env
 WAHA_BASE_URL=http://waha:3000
@@ -371,13 +402,13 @@ npm run typecheck
 npm test
 ```
 
-## Production Notes
+## Catatan Production
 
-- Do not commit `.env`.
-- Rotate keys that were pasted into chats, logs, or screenshots.
-- Use long random values for `APP_ADMIN_TOKEN` and `APP_ADMIN_PASSWORD`.
-- Keep `APP_LOGIN_ENABLED=true` when exposing the dashboard.
-- `X_PROVIDER=nitter` is useful for MVPs but depends on public Nitter availability.
-- Prefer `X_PROVIDER=official` with an official X token for a more durable production setup.
-- Keep `X_BOOTSTRAP_MODE=latest` to avoid publishing old history on first sync.
-- Keep `PUBLISH_INLINE=false` on Railway because the worker service is persistent.
+- Jangan commit `.env`.
+- Rotate secret yang pernah dipaste di chat, log, screenshot, atau issue.
+- Gunakan password admin dan token admin yang panjang.
+- Aktifkan `APP_LOGIN_ENABLED=true` jika dashboard punya public domain.
+- `X_PROVIDER=nitter` cocok untuk MVP, tetapi bergantung pada availability public Nitter.
+- Untuk production jangka panjang, pertimbangkan `X_PROVIDER=official` dengan token API resmi X.
+- Gunakan `X_BOOTSTRAP_MODE=latest` agar source baru tidak mem-publish semua history lama.
+- Di Railway, gunakan `PUBLISH_INLINE=false` karena worker berjalan persistent.
