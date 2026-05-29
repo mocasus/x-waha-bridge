@@ -13,6 +13,17 @@
   Mirror public X posts to WhatsApp via WAHA and Telegram via Bot API, with PostgreSQL state, Redis queues, retries, a dark CLI, and an admin dashboard.
 </p>
 
+## GitHub Share Preview
+
+Repo ini sudah punya deskripsi dan topics GitHub agar link share punya konteks yang jelas. Custom preview image disiapkan di `assets/social-preview.png` dengan ukuran `1280x640`.
+
+Untuk mengaktifkan gambar embed GitHub:
+
+1. Buka repo di GitHub.
+2. Masuk ke `Settings`.
+3. Cari bagian `Social preview`.
+4. Klik `Edit`, lalu upload `assets/social-preview.png`.
+
 ## Apa Ini?
 
 X WAHA Bridge adalah service automation untuk memantau akun X publik, menyimpan post baru, lalu mengirimkannya ke target WhatsApp dan Telegram. Project ini cocok untuk membuat bot mirror, news relay, komunitas update channel, atau pipeline publikasi otomatis dari beberapa akun X ke channel yang kamu kelola.
