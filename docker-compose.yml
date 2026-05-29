@@ -1,0 +1,90 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: x_waha_bridge
+      POSTGRES_USER: bridge
+      POSTGRES_PASSWORD: bridge
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bridge -d x_waha_bridge"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  waha:
+    image: devlikeapro/waha:latest
+    profiles:
+      - local-waha
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    volumes:
+      - waha_sessions:/app/.sessions
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  bridge-api:
+    build:
+      context: .
+    env_file:
+      - .env
+    environment:
+      APP_ROLE: api
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+  bridge-scheduler:
+    build:
+      context: .
+    env_file:
+      - .env
+    environment:
+      APP_ROLE: scheduler
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  bridge-worker:
+    build:
+      context: .
+    env_file:
+      - .env
+    environment:
+      APP_ROLE: worker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
+  waha_sessions:

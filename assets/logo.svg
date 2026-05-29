@@ -1,0 +1,37 @@
+<svg width="960" height="240" viewBox="0 0 960 240" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">X WAHA Bridge</title>
+  <desc id="desc">Logo for a bridge service that mirrors X posts to WhatsApp and Telegram.</desc>
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="960" y2="240" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#071A20"/>
+      <stop offset="0.55" stop-color="#102C2F"/>
+      <stop offset="1" stop-color="#14221F"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="168" y1="42" x2="792" y2="198" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00D084"/>
+      <stop offset="0.52" stop-color="#21C7A8"/>
+      <stop offset="1" stop-color="#4DA3FF"/>
+    </linearGradient>
+    <filter id="shadow" x="48" y="28" width="196" height="196" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <rect width="960" height="240" rx="28" fill="url(#panel)"/>
+  <path d="M292 174C342 116 400 87 466 87H494" stroke="url(#accent)" stroke-width="12" stroke-linecap="round"/>
+  <path d="M454 62L494 87L454 112" stroke="url(#accent)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M520 153H608C648 153 680 124 716 78" stroke="url(#accent)" stroke-width="12" stroke-linecap="round"/>
+  <path d="M678 76H716V114" stroke="url(#accent)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <g filter="url(#shadow)">
+    <rect x="72" y="52" width="144" height="144" rx="36" fill="#071A20"/>
+    <rect x="84" y="64" width="120" height="120" rx="28" stroke="url(#accent)" stroke-width="8"/>
+    <path d="M116 96L172 152" stroke="#F7FFF9" stroke-width="14" stroke-linecap="round"/>
+    <path d="M172 96L116 152" stroke="#F7FFF9" stroke-width="14" stroke-linecap="round"/>
+  </g>
+  <text x="272" y="114" fill="#F7FFF9" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="48" font-weight="800">X WAHA Bridge</text>
+  <text x="274" y="154" fill="#B7D4CB" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="500">Mirror X posts to WhatsApp and Telegram with queues, retries, and a clean admin dashboard.</text>
+  <g transform="translate(730 54)">
+    <rect x="0" y="0" width="156" height="42" rx="21" fill="#0B2C28" stroke="#1B5B4E"/>
+    <circle cx="28" cy="21" r="8" fill="#00D084"/>
+    <text x="48" y="27" fill="#D9FFF3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">Railway ready</text>
+  </g>
+</svg>

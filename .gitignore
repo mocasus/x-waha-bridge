@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.env
+.env.local
+npm-debug.log*
+
+.vercel
+
+# Local runtime/debug artifacts
+deliveries.json
+nitter_feed.xml
+remote-waha-qr.png
+query
+{console.error(e)

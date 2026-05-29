@@ -1,0 +1,9 @@
+process.env.DATABASE_URL = process.env.DATABASE_URL ?? "postgres://postgres:postgres@localhost:5432/postgres";
+process.env.REDIS_URL = process.env.REDIS_URL ?? "redis://localhost:6379";
+process.env.WAHA_BASE_URL = process.env.WAHA_BASE_URL ?? "http://localhost:3000";
+process.env.WAHA_SESSION_NAME = process.env.WAHA_SESSION_NAME ?? "default";
+process.env.WAHA_TARGETS = process.env.WAHA_TARGETS ?? "";
+process.env.WAHA_FORWARD_TARGETS = process.env.WAHA_FORWARD_TARGETS ?? "";
+process.env.WAHA_CHANNEL_ID = process.env.WAHA_CHANNEL_ID ?? "";
+process.env.TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN ?? "";
+process.env.TELEGRAM_CHAT_IDS = process.env.TELEGRAM_CHAT_IDS ?? "";
