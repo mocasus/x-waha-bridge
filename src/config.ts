@@ -6,6 +6,44 @@ if (!process.env.VERCEL) {
   dotenv.config();
 }
 
+const TRUTHY = new Set(["true", "1", "yes", "y", "on"]);
+const FALSY = new Set(["false", "0", "no", "n", "off", ""]);
+
+/**
+ * Parse a boolean environment variable safely.
+ *
+ * `z.coerce.boolean()` performs `Boolean(value)`, so any non-empty string
+ * (including the literal "false") becomes `true`. This helper reads the value
+ * explicitly so that "false"/"0"/"no" resolve to `false` as expected.
+ */
+function envBoolean(defaultValue: boolean) {
+  return z
+    .union([z.boolean(), z.string()])
+    .default(defaultValue)
+    .transform((value, ctx) => {
+      if (typeof value === "boolean") {
+        return value;
+      }
+
+      const normalized = value.trim().toLowerCase();
+
+      if (TRUTHY.has(normalized)) {
+        return true;
+      }
+
+      if (FALSY.has(normalized)) {
+        return false;
+      }
+
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Expected a boolean-like value (true/false), received "${value}"`
+      });
+
+      return z.NEVER;
+    });
+}
+
 const schema = z.object({
   APP_ROLE: z.enum(["all", "api", "scheduler", "worker"]).default("all"),
   APP_PORT: z.coerce.number().int().positive().optional(),
@@ -13,7 +51,7 @@ const schema = z.object({
   APP_ADMIN_TOKEN: z.string().optional().default(""),
   APP_ADMIN_USERNAME: z.string().optional().default(""),
   APP_ADMIN_PASSWORD: z.string().optional().default(""),
-  APP_LOGIN_ENABLED: z.coerce.boolean().default(false),
+  APP_LOGIN_ENABLED: envBoolean(false),
   DATABASE_URL: z.string().min(1),
   REDIS_URL: z.string().min(1),
   X_PROVIDER: z.enum(["auto", "official", "nitter"]).default("auto"),
@@ -34,14 +72,14 @@ const schema = z.object({
   TELEGRAM_BOT_TOKEN: z.string().optional().default(""),
   TELEGRAM_CHAT_IDS: z.string().default(""),
   TELEGRAM_API_BASE_URL: z.string().url().default("https://api.telegram.org"),
-  TELEGRAM_SEND_MEDIA: z.coerce.boolean().default(true),
+  TELEGRAM_SEND_MEDIA: envBoolean(true),
   MESSAGE_HEADER: z.string().default("[X Mirror]"),
   MESSAGE_FOOTER: z.string().default(""),
-  SEND_MEDIA: z.coerce.boolean().default(true),
+  SEND_MEDIA: envBoolean(true),
   PUBLISH_CONCURRENCY: z.coerce.number().int().positive().default(1),
   PUBLISH_ATTEMPTS: z.coerce.number().int().positive().default(3),
   PUBLISH_BACKOFF_MS: z.coerce.number().int().positive().default(5000),
-  PUBLISH_INLINE: z.coerce.boolean().default(false),
+  PUBLISH_INLINE: envBoolean(false),
   CRON_SECRET: z.string().optional().default("")
 });
 
@@ -114,5 +152,6 @@ export const config = {
     attempts: env.PUBLISH_ATTEMPTS,
     backoffMs: env.PUBLISH_BACKOFF_MS,
     inline: env.PUBLISH_INLINE
-  }
+  },
+  cronSecret: env.CRON_SECRET.trim()
 };
