@@ -67,6 +67,12 @@ export async function ensureSchema(): Promise<void> {
       )
     `);
 
+    // Indexes to keep dashboard/queries fast as the tables grow.
+    await client.query("CREATE INDEX IF NOT EXISTS idx_posts_posted_at ON posts (posted_at DESC)");
+    await client.query("CREATE INDEX IF NOT EXISTS idx_posts_source_id ON posts (source_id)");
+    await client.query("CREATE INDEX IF NOT EXISTS idx_deliveries_status ON deliveries (status)");
+    await client.query("CREATE INDEX IF NOT EXISTS idx_deliveries_post_id ON deliveries (post_id)");
+
     await client.query("COMMIT");
   } catch (error) {
     await client.query("ROLLBACK");

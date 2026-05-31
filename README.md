@@ -604,3 +604,18 @@ npm test
 - Untuk production jangka panjang, pertimbangkan `X_PROVIDER=official` dengan token API resmi X.
 - Gunakan `X_BOOTSTRAP_MODE=latest` agar source baru tidak mem-publish semua history lama.
 - Di Railway, gunakan `PUBLISH_INLINE=false` karena worker berjalan persistent.
+
+
+## Contributing
+
+Kontribusi sangat diterima, baik bug report, feature request, dokumentasi, maupun
+kode. Sebelum membuat pull request, jalankan `npm run typecheck` dan `npm test`.
+Detail lengkap ada di [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Untuk laporan keamanan, jangan buka issue publik. Ikuti panduan di
+[SECURITY.md](SECURITY.md).
+
+## License
+
+Project ini dirilis sebagai open source di bawah lisensi [MIT](LICENSE).
+Copyright (c) 2026 mocasus.

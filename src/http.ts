@@ -1,10 +1,12 @@
 import express from "express";
 import session from "express-session";
 import os from "node:os";
+import { isAdminAuthConfigured, isAuthorizedRequest } from "./auth";
 import { config } from "./config";
 import { pool } from "./db";
 import { logger } from "./logger";
-import { buildPublishJobId, publishQueue, redis } from "./queue";
+import { dispatchPublish } from "./publish-dispatcher";
+import { redis } from "./queue";
 import {
   countDeliveries,
   countPosts,
@@ -82,53 +84,8 @@ function getSystemInfo() {
   };
 }
 
-function requireAdminAuth(request: express.Request, response: express.Response, next: express.NextFunction): void {
-  if (!config.admin.loginEnabled) {
-    next();
-    return;
-  }
-
-  const auth = request.headers.authorization ?? "";
-  const match = auth.match(/^Basic\s+(.+)$/i);
-
-  if (match) {
-    const decoded = Buffer.from(match[1], "base64").toString("utf8");
-    const [user, ...rest] = decoded.split(":");
-    const pass = rest.join(":");
-
-    if (user === config.admin.username && pass === config.admin.password) {
-      next();
-      return;
-    }
-  }
-
-  response.setHeader("WWW-Authenticate", 'Basic realm="x-waha-bridge"');
-  response.status(401).json({ error: "Unauthorized" });
-}
-
-function isAdminAuthConfigured(): boolean {
-  return Boolean(config.admin.token || (config.admin.username && config.admin.password));
-}
-
-function isAuthorizedRequest(request: express.Request): boolean {
-  if (config.admin.loginEnabled && request.session?.authenticated) {
-    return true;
-  }
-
-  const expected = config.admin.token;
-
-  if (!expected) {
-    return !isAdminAuthConfigured();
-  }
-
-  const authHeader = request.header("authorization") || "";
-  return authHeader === `Bearer ${expected}`;
-}
-
 function isCronRequestAuthorized(request: express.Request): boolean {
-  const expected = (config as { publish?: { inline?: boolean } }).publish?.inline === undefined
-    ? process.env.CRON_SECRET
-    : process.env.CRON_SECRET;
+  const expected = config.cronSecret;
 
   if (!expected) {
     return true;
@@ -136,14 +93,6 @@ function isCronRequestAuthorized(request: express.Request): boolean {
 
   const header = request.header("authorization") || "";
   return header === `Bearer ${expected}`;
-}
-
-async function dispatchPublish(data: { postId: number; waChannelId: string }): Promise<void> {
-  await publishQueue.add(
-    "publish-post",
-    data,
-    { jobId: buildPublishJobId(data.postId, data.waChannelId) }
-  );
 }
 
 function renderLoginPage(errorMessage?: string): string {
