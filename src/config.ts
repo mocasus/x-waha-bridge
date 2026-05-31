@@ -2,9 +2,7 @@ import dotenv from "dotenv";
 import { z } from "zod";
 import type { AppRole } from "./types";
 
-if (!process.env.VERCEL) {
-  dotenv.config();
-}
+dotenv.config();
 
 const TRUTHY = new Set(["true", "1", "yes", "y", "on"]);
 const FALSY = new Set(["false", "0", "no", "n", "off", ""]);

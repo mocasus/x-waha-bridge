@@ -32,8 +32,16 @@
     "postgresql",
     "redis"
   ],
-  "author": "",
+  "author": "mocasus",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mocasus/x-waha-bridge.git"
+  },
+  "homepage": "https://github.com/mocasus/x-waha-bridge#readme",
+  "bugs": {
+    "url": "https://github.com/mocasus/x-waha-bridge/issues"
+  },
   "type": "commonjs",
   "dependencies": {
     "bullmq": "^5.71.0",

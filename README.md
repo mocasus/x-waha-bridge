@@ -7,6 +7,8 @@
   <a href="https://www.typescriptlang.org"><img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white"></a>
   <a href="https://railway.com"><img alt="Railway ready" src="https://img.shields.io/badge/Railway-ready-0B0D0E?style=for-the-badge&logo=railway&logoColor=white"></a>
   <a href="https://docs.docker.com/compose/"><img alt="Docker Compose" src="https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white"></a>
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge"></a>
+  <a href="https://github.com/mocasus/x-waha-bridge/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/mocasus/x-waha-bridge/actions/workflows/ci.yml/badge.svg"></a>
 </p>
 
 <p align="center">
@@ -348,6 +350,8 @@ http://127.0.0.1:8080
 ## Deploy Ke Railway
 
 Railway adalah target paling nyaman untuk project ini karena bisa menjalankan API, scheduler, worker, PostgreSQL, dan Redis dalam satu project.
+
+> Repo ini menyertakan `railway.json` sehingga Railway otomatis build lewat `Dockerfile` dan menjalankan `node dist/index.js` dengan restart policy `ON_FAILURE`. Tiap service tinggal membedakan `APP_ROLE`. Hanya `bridge-api` yang perlu public domain dan healthcheck path `/healthz`; `bridge-scheduler` dan `bridge-worker` tidak melayani HTTP, jadi jangan set healthcheck untuk keduanya.
 
 ### 1. Buat project
 

@@ -4,8 +4,6 @@ dist/
 .env.local
 npm-debug.log*
 
-.vercel
-
 # Local runtime/debug artifacts
 deliveries.json
 nitter_feed.xml

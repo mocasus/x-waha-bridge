@@ -1,56 +1,91 @@
 <svg width="1200" height="360" viewBox="0 0 1200 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">X WAHA Bridge</title>
-  <desc id="desc">Dark black, blue, and red banner for X WAHA Bridge.</desc>
+  <desc id="desc">Dark banner for X WAHA Bridge: mirror X posts to WhatsApp and Telegram with queues, retries, and Railway deploy.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="360" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#05070C"/>
-      <stop offset="0.52" stop-color="#090D18"/>
-      <stop offset="1" stop-color="#13070A"/>
+      <stop offset="0.55" stop-color="#0A0F1C"/>
+      <stop offset="1" stop-color="#140509"/>
     </linearGradient>
-    <linearGradient id="border" x1="74" y1="56" x2="1126" y2="304" gradientUnits="userSpaceOnUse">
+    <linearGradient id="border" x1="40" y1="20" x2="1160" y2="340" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#1D9BF0"/>
-      <stop offset="0.58" stop-color="#1D4ED8"/>
+      <stop offset="0.55" stop-color="#2563EB"/>
       <stop offset="1" stop-color="#EF233C"/>
     </linearGradient>
-    <linearGradient id="flow" x1="258" y1="162" x2="921" y2="162" gradientUnits="userSpaceOnUse">
+    <linearGradient id="title" x1="228" y1="120" x2="760" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#CFE3FF"/>
+    </linearGradient>
+    <linearGradient id="flow" x1="300" y1="258" x2="900" y2="258" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#1D9BF0"/>
-      <stop offset="0.5" stop-color="#FFFFFF"/>
+      <stop offset="0.5" stop-color="#E8F4FF"/>
       <stop offset="1" stop-color="#EF233C"/>
     </linearGradient>
-    <filter id="glow" x="-40" y="-40" width="1280" height="440" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-      <feGaussianBlur stdDeviation="22" result="blur"/>
-      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.09 0 0 0 0 0.41 0 0 0 0 0.94 0 0 0 0.28 0"/>
+    <radialGradient id="blueGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(150 70) rotate(52) scale(360 320)">
+      <stop stop-color="#1D9BF0" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#1D9BF0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="redGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1080 320) rotate(-140) scale(380 360)">
+      <stop stop-color="#EF233C" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#EF233C" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-60" y="-60" width="1320" height="480" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.11 0 0 0 0 0.61 0 0 0 0 0.94 0 0 0 0.30 0"/>
       <feBlend in="SourceGraphic"/>
     </filter>
+    <clipPath id="round">
+      <rect width="1200" height="360" rx="30"/>
+    </clipPath>
   </defs>
 
-  <rect width="1200" height="360" rx="34" fill="url(#bg)"/>
-  <rect x="34" y="34" width="1132" height="292" rx="28" stroke="url(#border)" stroke-width="3"/>
+  <rect width="1200" height="360" rx="30" fill="url(#bg)"/>
 
-  <circle cx="224" cy="180" r="112" fill="#070B12" stroke="#1D9BF0" stroke-width="4"/>
-  <path d="M170 126L278 234" stroke="#F8FAFC" stroke-width="22" stroke-linecap="round"/>
-  <path d="M278 126L170 234" stroke="#F8FAFC" stroke-width="22" stroke-linecap="round"/>
-  <path d="M154 253C193 212 224 199 272 199H305" stroke="#EF233C" stroke-width="12" stroke-linecap="round"/>
+  <g clip-path="url(#round)">
+    <rect width="1200" height="360" fill="url(#blueGlow)"/>
+    <rect width="1200" height="360" fill="url(#redGlow)"/>
+    <g opacity="0.07">
+      <path d="M980 110L1120 250" stroke="#1D9BF0" stroke-width="46" stroke-linecap="round"/>
+      <path d="M1120 110L980 250" stroke="#1D9BF0" stroke-width="46" stroke-linecap="round"/>
+    </g>
+  </g>
 
+  <rect x="14" y="14" width="1172" height="332" rx="24" fill="none" stroke="url(#border)" stroke-width="2"/>
+
+  <!-- Emblem -->
   <g filter="url(#glow)">
-    <path d="M376 187C445 125 519 125 588 187C657 249 731 249 800 187" stroke="url(#flow)" stroke-width="11" stroke-linecap="round"/>
-    <path d="M774 153L812 187L774 221" stroke="#EF233C" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="64" y="120" width="120" height="120" rx="30" fill="#070C16" stroke="#1D9BF0" stroke-width="3"/>
+  </g>
+  <rect x="76" y="132" width="96" height="96" rx="22" fill="none" stroke="#15273E" stroke-width="1.5"/>
+  <path d="M96 152L152 208" stroke="#F8FAFC" stroke-width="18" stroke-linecap="round"/>
+  <path d="M152 152L96 208" stroke="#F8FAFC" stroke-width="18" stroke-linecap="round"/>
+  <path d="M94 214Q124 238 154 214" stroke="#EF233C" stroke-width="8" stroke-linecap="round" fill="none"/>
+
+  <!-- Title -->
+  <text x="227" y="153" fill="url(#title)" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="60" font-weight="800" letter-spacing="-1">X WAHA Bridge</text>
+  <text x="230" y="192" fill="#9DB4CC" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="18.5" font-weight="500">Mirror X posts to WhatsApp &amp; Telegram &#8212; queued, retried, Railway-ready.</text>
+
+  <!-- Pipeline -->
+  <g font-family="Consolas, ui-monospace, Menlo, monospace" font-weight="700" font-size="16.5">
+    <rect x="228" y="236" width="132" height="44" rx="22" fill="#0C1A2C" stroke="#1D9BF0"/>
+    <text x="294" y="264" text-anchor="middle" fill="#CFE7FF">X SOURCE</text>
+
+    <path d="M366 258H402" stroke="#3A5577" stroke-width="3" stroke-linecap="round"/>
+    <path d="M396 252L404 258L396 264" stroke="#1D9BF0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+    <rect x="410" y="236" width="118" height="44" rx="22" fill="#0E1426" stroke="#5B6B82"/>
+    <text x="469" y="264" text-anchor="middle" fill="#DCE6F2">QUEUE</text>
+
+    <path d="M534 258H570" stroke="#3A5577" stroke-width="3" stroke-linecap="round"/>
+    <path d="M564 252L572 258L564 264" stroke="#EF233C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+    <rect x="578" y="236" width="256" height="44" rx="22" fill="#220A11" stroke="#EF233C"/>
+    <text x="706" y="264" text-anchor="middle" fill="#FFDDE3">WHATSAPP &#183; TELEGRAM</text>
+
+    <rect x="860" y="236" width="132" height="44" rx="22" fill="#0C1322" stroke="#8B9BF0"/>
+    <text x="926" y="264" text-anchor="middle" fill="#DDE3FF">RAILWAY</text>
   </g>
 
-  <rect x="368" y="98" width="92" height="42" rx="21" fill="#0D1726" stroke="#1D9BF0"/>
-  <text x="414" y="125" text-anchor="middle" fill="#E8F4FF" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="800">X</text>
-
-  <rect x="560" y="222" width="118" height="42" rx="21" fill="#0B1020" stroke="#64748B"/>
-  <text x="619" y="249" text-anchor="middle" fill="#E2E8F0" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="800">QUEUE</text>
-
-  <rect x="804" y="98" width="144" height="42" rx="21" fill="#230A12" stroke="#EF233C"/>
-  <text x="876" y="125" text-anchor="middle" fill="#FFECEF" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="800">WA + TG</text>
-
-  <text x="370" y="177" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="54" font-weight="900">X WAHA Bridge</text>
-  <text x="372" y="214" fill="#B7C8D9" font-family="Segoe UI, Arial, sans-serif" font-size="21" font-weight="600">Mirror X posts to WhatsApp and Telegram with queues, retries, and CLI control.</text>
-
-  <g transform="translate(936 230)">
-    <rect width="148" height="42" rx="21" fill="#101827" stroke="#1D9BF0"/>
-    <text x="74" y="27" text-anchor="middle" fill="#DBEAFE" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">DESKTOP + TERMUX</text>
-  </g>
+  <!-- Stack -->
+  <text x="230" y="314" fill="#5C7088" font-family="Consolas, ui-monospace, Menlo, monospace" font-size="14.5" font-weight="600" letter-spacing="0.4">TypeScript &#8226; BullMQ &#8226; PostgreSQL &#8226; Redis &#8226; WAHA &#8226; Telegram Bot API</text>
 </svg>
